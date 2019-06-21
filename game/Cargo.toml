@@ -1,0 +1,8 @@
+[package]
+name = "game"
+version = "0.1.0"
+authors = ["Tarik <tarikishaq@hotmail.com>"]
+edition = "2018"
+
+[dependencies]
+gamelib = { path = "../gamelib" }
