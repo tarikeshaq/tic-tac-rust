@@ -82,6 +82,10 @@ fn main() -> Result<(), &'static str> {
                 .expect("Invalid input!");
             let index: usize = user_input.trim().parse().unwrap();
             state.update_board(index, 'o')?;
+            if state.is_win('o') {
+                println!("You Won!");
+                break;
+            }
         }
         Ok(())
     }
