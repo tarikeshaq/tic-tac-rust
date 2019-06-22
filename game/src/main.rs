@@ -1,8 +1,28 @@
 
+use gamelib::game_state::Difficulty;
 use gamelib::game_state::State;
 use std::io;
 fn main() -> Result<(), &'static str> {
-    let mut state = State::new();
+    let mut diff = String::new();
+    println!("Please choose the difficulty!");
+    println!("1 for easy, 2 for medium and 3 for hard");
+    io::stdin().read_line(&mut diff).expect("Invalid input");
+    let diff_num: u32 = diff.trim().parse().unwrap();
+    let difficulty: Difficulty;
+    match diff_num {
+        1 => {
+            difficulty = Difficulty::Easy;
+        }
+        2 => {
+            difficulty = Difficulty::Medium;
+        }
+        3 => {
+            difficulty = Difficulty::Hard;
+        }
+        _ => panic!("Invalid value"),
+    }
+
+    let mut state = State::new(difficulty);
     let mut x_o_choice = String::new();
     println!("Please choose x or o");
     io::stdin()
@@ -12,6 +32,7 @@ fn main() -> Result<(), &'static str> {
         loop {
             if state.get_empty_spots().len() == 0 {
                 println!("It is a tie!");
+                break;
             }
             println!("Choose an index!");
             let mut user_input = String::new();
@@ -26,8 +47,9 @@ fn main() -> Result<(), &'static str> {
             }
             if state.get_empty_spots().len() == 0 {
                 println!("It is a tie!");
+                break;
             }
-            let m = state.best_next_move(false);
+            let m = state.next_move(false);
             println!("Computer chose index: {}", m.index);
             state.update_board(m.index, 'o')?;
             if state.is_win('o') {
@@ -40,8 +62,9 @@ fn main() -> Result<(), &'static str> {
         loop {
             if state.get_empty_spots().len() == 0 {
                 println!("It is a tie!");
+                break;
             }
-            let m = state.best_next_move(true);
+            let m = state.next_move(true);
             println!("Computer chose index: {}", m.index);
             state.update_board(m.index, 'x')?;
             if state.is_win('x') {
@@ -50,6 +73,7 @@ fn main() -> Result<(), &'static str> {
             }
             if state.get_empty_spots().len() == 0 {
                 println!("It is a tie!");
+                break;
             }
             println!("Choose an index!");
             let mut user_input = String::new();
