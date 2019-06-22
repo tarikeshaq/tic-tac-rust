@@ -1,6 +1,12 @@
+use game_state::State;
 pub mod game_state {
     pub struct State {
         board: Vec<Vec<char>>,
+    }
+
+    pub struct Move {
+        pub index: usize,
+        pub score: i32,
     }
 
     impl State {
@@ -18,7 +24,7 @@ pub mod game_state {
             self.board.clone()
         }
 
-        pub fn update_box(&mut self, index: usize, val: char) -> Result<(), &'static str> {
+        pub fn update_board(&mut self, index: usize, val: char) -> Result<(), &'static str> {
             if index > 8 {
                 Err("Index needs to be between 0 and 8")
             } else {
@@ -26,7 +32,7 @@ pub mod game_state {
                     Err("invalid value, it needs to be 'x', 'o' or '0'")
                 } else {
                     if let Ok(value) = self.get_val_by_index(index) {
-                        if value == 'x' || value == 'o' {
+                        if (value == 'x' || value == 'o') && val != '0' {
                             Err("Invalid, value already selected")
                         } else {
                             self.set_val_by_index(index, val);
@@ -66,15 +72,130 @@ pub mod game_state {
                 self.set_board(board);
             } else {
                 let mut board = self.get_board();
-                let mut inner = board[1].clone();
-                inner[index - 3] = val;
-                board[1] = inner;
+                let mut inner = board[2].clone();
+                inner[index - 6] = val;
+                board[2] = inner;
                 self.set_board(board);
             }
         }
 
         pub fn set_board(&mut self, new_board: Vec<Vec<char>>) -> () {
             self.board = new_board;
+        }
+
+        pub fn is_win(&self, x_or_o: char) -> bool {
+            (self.board[0][0] == x_or_o && self.board[0][1] == x_or_o && self.board[0][2] == x_or_o)
+                || (self.board[1][0] == x_or_o
+                    && self.board[1][1] == x_or_o
+                    && self.board[1][2] == x_or_o)
+                || (self.board[2][0] == x_or_o
+                    && self.board[2][1] == x_or_o
+                    && self.board[2][2] == x_or_o)
+                || (self.board[0][0] == x_or_o
+                    && self.board[1][0] == x_or_o
+                    && self.board[2][0] == x_or_o)
+                || (self.board[0][1] == x_or_o
+                    && self.board[1][1] == x_or_o
+                    && self.board[2][1] == x_or_o)
+                || (self.board[0][2] == x_or_o
+                    && self.board[1][2] == x_or_o
+                    && self.board[2][2] == x_or_o)
+                || (self.board[0][0] == x_or_o
+                    && self.board[1][1] == x_or_o
+                    && self.board[2][2] == x_or_o)
+                || (self.board[0][2] == x_or_o
+                    && self.board[1][1] == x_or_o
+                    && self.board[2][0] == x_or_o)
+        }
+        pub fn best_next_move(&mut self, is_x: bool) -> Move {
+            let player_1 = 'x';
+            let player_2 = 'o';
+            if self.is_win(player_1) {
+                return Move {
+                    index: 0,
+                    score: 10,
+                };
+            }
+            if self.is_win(player_2) {
+                return Move {
+                    index: 0,
+                    score: -10,
+                };
+            }
+
+            let empty_spots = self.get_empty_spots();
+            if empty_spots.len() == 0 {
+                return Move { index: 0, score: 0 };
+            }
+            let mut moves = Vec::new();
+            for index in empty_spots {
+                let mut curr_player = 'x';
+                if !is_x {
+                    curr_player = 'o';
+                }
+                match self.update_board(index, curr_player) {
+                    Ok(()) => {
+                        let curr_move = self.best_next_move(!is_x);
+                        moves.push(Move {
+                            score: curr_move.score,
+                            index: index,
+                        });
+                        match self.update_board(index, '0') {
+                            Ok(()) => {}
+                            Err(message) => panic!(message),
+                        }
+                    }
+                    Err(message) => panic!(message),
+                }
+            }
+
+            if is_x {
+                let mut best_score: i32 = -10000000;
+                let mut best_score_index: usize = 0;
+                for value in moves {
+                    if value.score > best_score {
+                        best_score = value.score;
+                        best_score_index = value.index;
+                    }
+                }
+
+                Move {
+                    index: best_score_index,
+                    score: best_score,
+                }
+            } else {
+                let mut best_score: i32 = 10000000;
+                let mut best_score_index: usize = 0;
+                for value in moves {
+                    if value.score < best_score {
+                        best_score = value.score;
+                        best_score_index = value.index;
+                    }
+                }
+
+                Move {
+                    index: best_score_index,
+                    score: best_score,
+                }
+            }
+        }
+
+        pub fn get_empty_spots(&self) -> Vec<usize> {
+            let mut result = Vec::new();
+            for (index_i, row) in self.get_board().iter().enumerate() {
+                for (index_j, value) in row.iter().enumerate() {
+                    if *value == '0' {
+                        if index_i == 0 {
+                            result.push(index_j);
+                        } else if index_i == 1 {
+                            result.push(index_j + 3);
+                        } else {
+                            result.push(index_j + 6);
+                        }
+                    }
+                }
+            }
+            result
         }
     }
 }
@@ -106,22 +227,99 @@ mod tests {
         }
     }
     #[test]
-    fn get_val_by_valid_index_changed() {
-        let mut state = game_state::State::new();
-        match state.update_box(0, 'x') {
-            Ok(()) => match state.get_val_by_index(0) {
-                Ok(val) => {
-                    assert_eq!('x', val);
-                }
-                Err(message) => {
-                    println!("Error: {}", message);
-                    assert!(false);
-                }
-            },
-            Err(message) => {
-                println!("Error: {}", message);
-                assert!(false);
-            }
+    fn get_val_by_valid_index_changed() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        let val = state.get_val_by_index(0)?;
+        assert_eq!('x', val);
+
+        Ok(())
+    }
+
+    #[test]
+    fn is_win_winner() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(1, 'x')?;
+        state.update_board(2, 'x')?;
+
+        assert!(state.is_win('x'));
+        Ok(())
+    }
+
+    #[test]
+    fn is_win_not_winner() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(1, 'o')?;
+        state.update_board(2, 'x')?;
+
+        assert!(!state.is_win('x'));
+        Ok(())
+    }
+
+    #[test]
+    fn is_win_winner_diagonal() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(4, 'x')?;
+        state.update_board(8, 'x')?;
+        state.update_board(1, 'o')?;
+        state.update_board(2, 'o')?;
+        state.update_board(5, 'o')?;
+        assert!(state.is_win('x'));
+        Ok(())
+    }
+    #[test]
+    fn best_move_empty() -> Result<(), &'static str> {
+        let mut state = State::new();
+        let best_move = state.best_next_move(true);
+        match best_move.index {
+            0 => Ok(()),
+            2 => Ok(()),
+            6 => Ok(()),
+            8 => Ok(()),
+            _ => Err("Not the best move"),
         }
+    }
+
+    #[test]
+    fn best_move_one_to_win() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(1, 'x')?;
+        assert_eq!(2, state.best_next_move(true).index);
+        Ok(())
+    }
+
+    #[test]
+    fn best_move_one_to_win_diagonal() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(2, 'o')?;
+        state.update_board(4, 'x')?;
+        state.update_board(5, 'o')?;
+        assert_eq!(8, state.best_next_move(true).index);
+        Ok(())
+    }
+    #[test]
+    fn best_move_two_to_win() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(4, 'o')?;
+        state.update_board(8, 'x')?;
+        state.update_board(2, 'o')?;
+        assert_eq!(6, state.best_next_move(true).index);
+        Ok(())
+    }
+    #[test]
+    fn best_move_two_to_win_v2() -> Result<(), &'static str> {
+        let mut state = State::new();
+        state.update_board(0, 'x')?;
+        state.update_board(3, 'o')?;
+        state.update_board(2, 'x')?;
+        state.update_board(1, 'o')?;
+        assert_eq!(4, state.best_next_move(true).index);
+        Ok(())
     }
 }
