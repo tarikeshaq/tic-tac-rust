@@ -30,7 +30,7 @@ fn main() -> Result<(), String> {
         .expect("Invalid choice");
     if x_o_choice.trim() == "x" {
         loop {
-            if state.get_empty_spots().len() == 0 {
+            if state.is_tie() {
                 println!("It is a tie!");
                 break;
             }
@@ -40,18 +40,18 @@ fn main() -> Result<(), String> {
                 .read_line(&mut user_input)
                 .expect("Invalid input!");
             let index: usize = user_input.trim().parse().unwrap();
-            state.update_board(index, 'x')?;
+            state.update_board(index, 'x');
             if state.is_win('x') {
                 println!("You won!!");
                 break;
             }
-            if state.get_empty_spots().len() == 0 {
+            if state.is_tie() {
                 println!("It is a tie!");
                 break;
             }
             let index = state.next_move(false);
             println!("Computer chose index: {}", index);
-            state.update_board(index, 'o')?;
+            state.update_board(index, 'o');
             if state.is_win('o') {
                 println!("Computer won!!");
                 break;
@@ -60,18 +60,18 @@ fn main() -> Result<(), String> {
         Ok(())
     } else {
         loop {
-            if state.get_empty_spots().len() == 0 {
+            if state.is_tie() {
                 println!("It is a tie!");
                 break;
             }
             let index = state.next_move(true);
             println!("Computer chose index: {}", index);
-            state.update_board(index, 'x')?;
+            state.update_board(index, 'x');
             if state.is_win('x') {
                 println!("The computer wins!");
                 break;
             }
-            if state.get_empty_spots().len() == 0 {
+            if state.is_tie() {
                 println!("It is a tie!");
                 break;
             }
@@ -81,7 +81,7 @@ fn main() -> Result<(), String> {
                 .read_line(&mut user_input)
                 .expect("Invalid input!");
             let index: usize = user_input.trim().parse().unwrap();
-            state.update_board(index, 'o')?;
+            state.update_board(index, 'o');
             if state.is_win('o') {
                 println!("You Won!");
                 break;
