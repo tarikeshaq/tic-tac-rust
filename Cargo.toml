@@ -2,5 +2,5 @@
 
 members = [
     "game",
-    "gamelib"
+    "tic-tac-rust"
 ]

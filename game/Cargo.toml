@@ -5,4 +5,4 @@ authors = ["Tarik <tarikishaq@hotmail.com>"]
 edition = "2018"
 
 [dependencies]
-gamelib = { path = "../gamelib" }
+tic-tac-rust = { path = "../tic-tac-rust" }
