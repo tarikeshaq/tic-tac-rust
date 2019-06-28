@@ -1,5 +1,5 @@
 [package]
-name = "gamelib"
+name = "tic-tac-rust"
 version = "0.1.0"
 authors = ["Tarik <tarikishaq@hotmail.com>"]
 edition = "2018"
