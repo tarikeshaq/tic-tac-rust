@@ -1,8 +1,8 @@
 
-use gamelib::game_state::Difficulty;
-use gamelib::game_state::State;
+use gamelib::Difficulty;
+use gamelib::State;
 use std::io;
-fn main() -> Result<(), &'static str> {
+fn main() -> Result<(), String> {
     let mut diff = String::new();
     println!("Please choose the difficulty!");
     println!("1 for easy, 2 for medium and 3 for hard");
@@ -49,9 +49,9 @@ fn main() -> Result<(), &'static str> {
                 println!("It is a tie!");
                 break;
             }
-            let m = state.next_move(false);
-            println!("Computer chose index: {}", m.index);
-            state.update_board(m.index, 'o')?;
+            let index = state.next_move(false);
+            println!("Computer chose index: {}", index);
+            state.update_board(index, 'o')?;
             if state.is_win('o') {
                 println!("Computer won!!");
                 break;
@@ -64,9 +64,9 @@ fn main() -> Result<(), &'static str> {
                 println!("It is a tie!");
                 break;
             }
-            let m = state.next_move(true);
-            println!("Computer chose index: {}", m.index);
-            state.update_board(m.index, 'x')?;
+            let index = state.next_move(true);
+            println!("Computer chose index: {}", index);
+            state.update_board(index, 'x')?;
             if state.is_win('x') {
                 println!("The computer wins!");
                 break;
