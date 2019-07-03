@@ -113,6 +113,11 @@ impl State {
                 && self.board[2][0] == x_or_o)
     }
 
+    pub fn reset_board(&mut self, diff: Difficulty) {
+        self.board = vec![vec!['0'; 3]; 3];
+        self.difficulty = diff;
+    }
+
     pub fn next_move(&mut self, is_x: bool) -> usize {
         match self.difficulty {
             Difficulty::Easy => {

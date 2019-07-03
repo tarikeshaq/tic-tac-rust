@@ -51,7 +51,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "game"
 version = "0.1.0"
 dependencies = [
- "tic-tac-rust 0.1.1",
+ "tic-tac-rust 0.1.2",
 ]
 
 [[package]]
@@ -223,7 +223,7 @@ dependencies = [
 
 [[package]]
 name = "tic-tac-rust"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "console_error_panic_hook 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
