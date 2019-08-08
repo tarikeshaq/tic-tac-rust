@@ -142,7 +142,7 @@ impl State {
     }
     fn random_next_move(&self, _is_x: bool) -> Move {
         let empties = self.get_empty_spots();
-        let random_index: usize = thread_rng().gen_range(0, empties.len() - 1);
+        let random_index: usize = thread_rng().gen_range(0, empties.len());
         Move {
             score: 0,
             index: empties[random_index],
