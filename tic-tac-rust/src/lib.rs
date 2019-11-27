@@ -1,4 +1,3 @@
-
 use rand::{thread_rng, Rng};
 use wasm_bindgen::prelude::*;
 
@@ -135,7 +134,6 @@ impl State {
                 } else {
                     self.best_next_move(is_x).index
                 }
-
             }
             Difficulty::Hard => self.best_next_move(is_x).index,
         }
@@ -225,7 +223,6 @@ impl State {
                     }
                 }
             }
-
         }
         result
     }

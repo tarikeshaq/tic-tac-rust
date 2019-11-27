@@ -2,5 +2,6 @@
 
 members = [
     "game",
+    "ffi",
     "tic-tac-rust"
 ]
