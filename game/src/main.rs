@@ -1,7 +1,6 @@
-
+use std::io;
 use tic_tac_rust::Difficulty;
 use tic_tac_rust::State;
-use std::io;
 fn main() -> Result<(), String> {
     let mut diff = String::new();
     println!("Please choose the difficulty!");

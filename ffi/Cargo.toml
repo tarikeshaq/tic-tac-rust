@@ -1,0 +1,14 @@
+[package]
+name = "ffi"
+version = "0.1.0"
+authors = ["Tarik <tarikishaq@hotmail.com>"]
+edition = "2018"
+
+[dependencies]
+tic-tac-rust = { path = "../tic-tac-rust" }
+ffi-support = "0.3.5"
+lazy_static = "1.4.0"
+
+[lib]
+name = "tictacrust"
+crate-type = ["lib", "staticlib", "cdylib"] 
