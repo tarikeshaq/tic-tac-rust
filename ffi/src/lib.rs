@@ -59,7 +59,7 @@ pub extern "C" fn is_tie(handle: u64) -> u8 {
 }
 
 #[no_mangle]
-pub extern "C" fn reset_board(handle: u64, difficulty: i32) -> () {
+pub extern "C" fn reset_board(handle: u64, difficulty: i32) {
     let difficulty = get_difficulty_from_num(difficulty);
     STATE
         .lock()
@@ -84,7 +84,7 @@ pub extern "C" fn next_move(handle: u64, is_x: bool) -> i32 {
 }
 
 #[no_mangle]
-pub extern "C" fn update_board(handle: u64, index: u32, value: char) -> () {
+pub extern "C" fn update_board(handle: u64, index: u32, value: char) {
     STATE
         .lock()
         .unwrap()

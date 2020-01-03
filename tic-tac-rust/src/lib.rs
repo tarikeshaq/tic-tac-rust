@@ -16,7 +16,7 @@ pub struct State {
     difficulty: Difficulty,
 }
 
-struct Move {
+pub struct Move {
     pub index: usize,
     pub score: i32,
 }
@@ -29,21 +29,16 @@ impl State {
             difficulty: diff,
         }
     }
-    pub fn to_string(&self) -> String {
-        String::from("Not implemented")
-    }
 
-    fn get_board(&self) -> Vec<Vec<char>> {
+    pub fn get_board(&self) -> Vec<Vec<char>> {
         self.board.clone()
     }
 
     pub fn update_board(&mut self, index: usize, val: char) {
-        if index <= 8 {
-            if val == 'x' || val == 'o' || val == '0' {
-                let value_orig = self.get_val_by_index(index);
-                if (value_orig != 'x' && value_orig != 'o') || val == '0' {
-                    self.set_val_by_index(index, val);
-                }
+        if index <= 8 && (val == 'x' || val == 'o' || val == '0') {
+            let value_orig = self.get_val_by_index(index);
+            if (value_orig != 'x' && value_orig != 'o') || val == '0' {
+                self.set_val_by_index(index, val);
             }
         }
     }
@@ -58,7 +53,7 @@ impl State {
             '0'
         }
     }
-    fn set_val_by_index(&mut self, index: usize, val: char) -> () {
+    fn set_val_by_index(&mut self, index: usize, val: char) {
         if index < 3 {
             let mut board = self.get_board();
             let mut inner = board[0].clone();
@@ -84,7 +79,7 @@ impl State {
     }
 
     pub fn is_tie(&self) -> bool {
-        self.get_empty_spots().len() == 0
+        self.get_empty_spots().is_empty()
     }
 
     pub fn is_win(&self, x_or_o: char) -> bool {
@@ -146,7 +141,7 @@ impl State {
             index: empties[random_index],
         }
     }
-    fn best_next_move(&mut self, is_x: bool) -> Move {
+    pub fn best_next_move(&mut self, is_x: bool) -> Move {
         let player_1 = 'x';
         let player_2 = 'o';
         if self.is_win(player_1) {
@@ -163,25 +158,23 @@ impl State {
         }
 
         let empty_spots = self.get_empty_spots();
-        if empty_spots.len() == 0 {
+        if empty_spots.is_empty() {
             return Move { index: 0, score: 0 };
         }
         let mut moves = Vec::new();
         for index in empty_spots {
-            let mut curr_player = 'x';
-            if !is_x {
-                curr_player = 'o';
-            }
+            let curr_player = if is_x { 'x' } else { 'o' };
+
             self.update_board(index, curr_player);
             let curr_move = self.best_next_move(!is_x);
             moves.push(Move {
                 score: curr_move.score,
-                index: index,
+                index,
             });
             self.update_board(index, '0');
         }
         if is_x {
-            let mut best_score: i32 = -10000000;
+            let mut best_score: i32 = -10_000_000;
             let mut best_score_index: usize = 0;
             for value in moves {
                 if value.score > best_score {
@@ -194,7 +187,7 @@ impl State {
                 score: best_score,
             }
         } else {
-            let mut best_score: i32 = 10000000;
+            let mut best_score: i32 = 10_000_000;
             let mut best_score_index: usize = 0;
             for value in moves {
                 if value.score < best_score {
@@ -225,125 +218,5 @@ impl State {
             }
         }
         result
-    }
-}
-mod tests {
-    use super::*;
-    #[test]
-    fn create_new_state() {
-        let state = State::new(Difficulty::Hard);
-        let board = state.get_board();
-        assert_eq!(
-            vec![
-                vec!['0', '0', '0'],
-                vec!['0', '0', '0'],
-                vec!['0', '0', '0']
-            ],
-            board
-        );
-    }
-
-    #[test]
-    fn get_val_by_valid_index() {
-        let state = State::new(Difficulty::Hard);
-
-        let val = state.get_val_by_index(4);
-        assert_eq!('0', val);
-    }
-    #[test]
-    fn get_val_by_valid_index_changed() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        let val = state.get_val_by_index(0);
-        assert_eq!('x', val);
-
-        Ok(())
-    }
-
-    #[test]
-    fn is_win_winner() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(1, 'x');
-        state.update_board(2, 'x');
-
-        assert!(state.is_win('x'));
-        Ok(())
-    }
-
-    #[test]
-    fn is_win_not_winner() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(1, 'o');
-        state.update_board(2, 'x');
-
-        assert!(!state.is_win('x'));
-        Ok(())
-    }
-
-    #[test]
-    fn is_win_winner_diagonal() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(4, 'x');
-        state.update_board(8, 'x');
-        state.update_board(1, 'o');
-        state.update_board(2, 'o');
-        state.update_board(5, 'o');
-        assert!(state.is_win('x'));
-        Ok(())
-    }
-    #[test]
-    fn best_move_empty() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        let best_move = state.best_next_move(true);
-        match best_move.index {
-            0 => Ok(()),
-            2 => Ok(()),
-            6 => Ok(()),
-            8 => Ok(()),
-            _ => Err(String::from("Not the best move")),
-        }
-    }
-
-    #[test]
-    fn best_move_one_to_win() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(1, 'x');
-        assert_eq!(2, state.best_next_move(true).index);
-        Ok(())
-    }
-
-    #[test]
-    fn best_move_one_to_win_diagonal() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(2, 'o');
-        state.update_board(4, 'x');
-        state.update_board(5, 'o');
-        assert_eq!(8, state.best_next_move(true).index);
-        Ok(())
-    }
-    #[test]
-    fn best_move_two_to_win() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(4, 'o');
-        state.update_board(8, 'x');
-        state.update_board(2, 'o');
-        assert_eq!(6, state.next_move(true));
-        Ok(())
-    }
-    #[test]
-    fn best_move_two_to_win_v2() -> Result<(), String> {
-        let mut state = State::new(Difficulty::Hard);
-        state.update_board(0, 'x');
-        state.update_board(3, 'o');
-        state.update_board(2, 'x');
-        state.update_board(1, 'o');
-        assert_eq!(4, state.next_move(true));
-        Ok(())
     }
 }
