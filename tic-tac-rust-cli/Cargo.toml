@@ -1,8 +1,16 @@
 [package]
-name = "game"
+name = "tic-tac-rust-cli"
 version = "0.1.0"
 authors = ["Tarik <tarikishaq@hotmail.com>"]
 edition = "2018"
+license = "MIT"
+homepage = "https://github.com/tarikeshaq/tic-tac-rust"
+repository = "https://github.com/tarikeshaq/tic-tac-rust"
+readme = "../README.md"
+exclude = [".gitignore", ".github/**"]
+documentation = "https://docs.rs/tic-tac-rust-cli"
+description = "Tic tac toe game in rust! This is Rust CLI"
 
 [dependencies]
-tic-tac-rust = { path = "../tic-tac-rust" }
+tic-tac-rust = "0.1.3"
+update-notifier = "0.1.6"

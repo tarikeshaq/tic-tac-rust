@@ -1,7 +1,9 @@
 use std::io;
 use tic_tac_rust::Difficulty;
 use tic_tac_rust::State;
+use update_notifier::check_version;
 fn main() -> Result<(), String> {
+    check_version(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"), std::time::Duration::from_secs(30)).ok();
     let mut diff = String::new();
     println!("Please choose the difficulty!");
     println!("1 for easy, 2 for medium and 3 for hard");
