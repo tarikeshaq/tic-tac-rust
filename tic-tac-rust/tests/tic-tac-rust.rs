@@ -1,19 +1,5 @@
 use tic_tac_rust::{Difficulty, State};
 #[test]
-fn create_new_state() {
-    let state = State::new(Difficulty::Hard);
-    let board = state.get_board();
-    assert_eq!(
-        vec![
-            vec!['0', '0', '0'],
-            vec!['0', '0', '0'],
-            vec!['0', '0', '0']
-        ],
-        board
-    );
-}
-
-#[test]
 fn get_val_by_valid_index() {
     let state = State::new(Difficulty::Hard);
 
