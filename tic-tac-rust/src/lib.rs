@@ -16,6 +16,7 @@ pub struct State {
     difficulty: Difficulty,
 }
 
+#[wasm_bindgen]
 pub struct Move {
     pub index: usize,
     pub score: i32,
@@ -30,7 +31,7 @@ impl State {
         }
     }
 
-    pub fn get_board(&self) -> Vec<Vec<char>> {
+    fn get_board(&self) -> Vec<Vec<char>> {
         self.board.clone()
     }
 
