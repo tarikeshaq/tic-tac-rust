@@ -3,6 +3,13 @@ name = "tic-tac-rust"
 version = "0.1.3"
 authors = ["Tarik <tarikishaq@hotmail.com>"]
 edition = "2018"
+license = "MIT"
+homepage = "https://github.com/tarikeshaq/tic-tac-rust"
+repository = "https://github.com/tarikeshaq/tic-tac-rust"
+readme = "README.md"
+exclude = [".gitignore", ".github/**"]
+documentation = "https://docs.rs/tic-tac-rust"
+description = "Tic tac toe game in rust! This is the library, it can be run from a Rust CLI or from wasm!"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

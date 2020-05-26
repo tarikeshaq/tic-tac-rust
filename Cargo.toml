@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-    "game",
+    "tic-tac-rust-cli",
     "ffi",
     "tic-tac-rust"
 ]
