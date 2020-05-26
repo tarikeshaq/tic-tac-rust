@@ -13,4 +13,4 @@ description = "Tic tac toe game in rust! This is Rust CLI"
 
 [dependencies]
 tic-tac-rust = "0.1.3"
-update-notifier = "0.1.6"
+update-notifier = "0.1"
